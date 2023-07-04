@@ -1,0 +1,157 @@
+# Raster test
+
+This script was made to test loading in the high resolution imagery before incorprating it into the main figure. It is not needed to produce the main figure.
+
+```{r}
+
+library(terra)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+library(terrainr)
+library(RStoolbox)
+library(ggspatial)
+
+wytham <- terra::rast("data/ang20210716t_mosaic_30m_enmap_subset")
+valencia2b<-terra::rast("data/f168_3b_mapped_utm30n_atm_brdf_mosaic_30m_enmap_subset")
+
+
+
+values(wytham)[values(wytham) < 0.001] = NA
+
+places_UK <- tibble(name = c("Wytham", "Swinford"), X = c(-146070.6,-149877.3), Y = c(6759433.8, 6759339.01))
+
+
+places_UK2 <- places_UK %>%
+  st_as_sf(.,
+          coords = c("X","Y"),
+           crs=3857)%>%
+  st_transform(., 32630)%>%
+  st_coordinates()
+
+places_UK3 <- places_UK%>%
+  dplyr::select(name)%>%
+  cbind(., places_UK2)
+
+ggRGB(
+  wytham,
+  r = 38,
+  g = 26,
+  b = 9,
+  limits = NA,
+  stretch = "lin")+
+    geom_label(data = places_UK3, aes(X, Y, label = name), size = 2.5)+
+  theme_bw()+
+   theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank())+
+    annotation_scale(location = "bl",
+                      pad_x =unit(1, "cm"),
+                      pad_y=unit(2.5, "cm" ))
+
+  
+
+```
+
+```{r}
+valencia2b<-terra::rast("data/f168_3b_mapped_utm30n_atm_brdf_mosaic_30m_enmap_subset")
+
+values(valencia2b)[values(valencia2b) < 0.001] = NA
+
+places_Spain <- tibble(name = c("Utiel", "Caudete de las Fuentes", "Los Corrales"), X = c(-134164.6,-142509, -141510), Y = c(4803342.7, 4802270, 4807143))
+
+places_Spain2 <- places_Spain %>%
+  st_as_sf(.,
+          coords = c("X","Y"),
+           crs=3857)%>%
+  st_transform(., 32630)%>%
+  st_coordinates()
+
+places_Spain3 <- places_Spain%>%
+  select(name)%>%
+  cbind(., places_Spain2)
+
+
+ggRGB(
+  valencia2b,
+  r = 38,
+  g = 26,
+  b = 9,
+  limits = NA,
+  stretch = "lin")+
+  geom_label(data = places_Spain3, aes(X, Y, label = name), size = 2.5)+
+  theme_bw()+
+   theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank())+
+      annotation_scale(location = "br")
+```
+
+```{r}
+wytham_21 <- terra::rast("data/f184a013b_mapped_osng_atm_brdf_mosaic_30m_enmap_subset")
+
+
+values(wytham_21)[values(wytham_21) == 0.00] = NA
+
+crs(wytham_21) <- CRS('+init=EPSG:27700')
+
+places_UK <- tibble(name = c("Wytham", "Swinford"), X = c(-146070.6,-149877.3), Y = c(6759433.8, 6759339.01))
+
+
+places_UK2 <- places_UK %>%
+  st_as_sf(.,
+          coords = c("X","Y"),
+           crs=3857)%>%
+  st_transform(., 27700)%>%
+  st_coordinates()
+
+places_UK3 <- places_UK%>%
+  dplyr::select(name)%>%
+  cbind(., places_UK2)
+
+ggRGB(
+  wytham_21,
+  r = 38,
+  g = 26,
+  b = 9,
+#  limits = c(100,10000),
+ # clipValues=c(100,1000),
+  stretch = "lin")+
+    geom_label(data = places_UK3, aes(X, Y, label = name), size = 2.5)+
+  theme_bw()+
+   theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank())+
+    annotation_scale(location = "br",
+                      pad_x =unit(1, "cm"),
+                      pad_y=unit(2.5, "cm" ))
+
+  
+```
+
+
+
